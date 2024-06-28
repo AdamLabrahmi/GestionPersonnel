@@ -5,31 +5,16 @@
     <h1 class="mt-5 text-2xl font-bold">Faire une Demande d'Absence</h1>
 
     {{-- Error Alert --}}
-    {{-- @if ($errors->any())
+    @if ($errors->any())
     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
         <p class="font-bold">Attention</p>
-        <p>Il y a eu des problèmes avec votre saisie:</p>
         <ul>
             @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
+            <li>{{ $error === 'The date fin field is required.' ? 'La date fin doit être supérieure à la date début.' : $error }}</li>
             @endforeach
         </ul>
     </div>
-    @endif --}}
-
-    {{-- Error Alert --}}
-@if ($errors->any())
-<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-    <p class="font-bold">Attention</p>
-    {{-- <p>Il y a eu des problèmes avec votre saisie:</p> --}}
-    <ul>
-        @foreach ($errors->all() as $error)
-        <li>{{ $error === 'The date fin field is required.' ? 'La date fin doit être supérieure à la date début.' : $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
-
+    @endif
 
     {{-- Success Alert --}}
     @if (session('success'))
@@ -60,7 +45,7 @@
         {{-- Motif Input --}}
         <div class="mb-4">
             <label for="motif" class="block text-sm font-bold text-gray-700 mb-2">Motif :</label>
-            <select name="motif" id="motif" required class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" onchange="togglePdfInput()">
+            <select name="motif" id="motif" required class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" onchange="toggleFields()">
                 <option value="formation_continue" {{ old('motif') == 'formation_continue' ? 'selected' : '' }}>Formation Continue</option>
                 <option value="formation_drif_drh" {{ old('motif') == 'formation_drif_drh' ? 'selected' : '' }}>Formation DRIF/DRH</option>
                 <option value="reunion" {{ old('motif') == 'reunion' ? 'selected' : '' }}>Réunion</option>
@@ -69,6 +54,27 @@
                 <option value="maladie" {{ old('motif') == 'maladie' ? 'selected' : '' }}>Maladie</option>
                 <option value="autre" {{ old('motif') == 'autre' ? 'selected' : '' }}>Autre</option>
             </select>
+        </div>
+
+        {{-- PDF File Input for "Maladie" --}}
+        <div class="mb-4" id="certificat_medical_div" style="display: none;">
+            <label for="certificat_medical" class="block text-sm font-bold text-gray-700 mb-2">Certificat Médical :</label>
+            <input type="file" name="certificat_medical" id="certificat_medical" accept="application/pdf"
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        {{-- Préciser votre motif Input (for "Autre") --}}
+        <div class="mb-4" id="preciser_motif_div" style="display: none;">
+            <label for="preciser_motif" class="block text-sm font-bold text-gray-700 mb-2">Préciser votre motif :</label>
+            <input type="text" name="preciser_motif" id="preciser_motif"
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ old('preciser_motif') }}">
+        </div>
+
+        {{-- PDF File Input for "Autre" --}}
+        <div class="mb-4" id="pdf_files_div" style="display: none;">
+            <label for="pdf_files" class="block text-sm font-bold text-gray-700 mb-2">Fichier PDF :</label>
+            <input type="file" name="pdf_files" id="pdf_files" accept="application/pdf"
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         </div>
 
         {{-- Date Début Input --}}
@@ -85,13 +91,6 @@
                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ old('date_fin') }}">
         </div>
 
-        {{-- PDF File Input --}}
-        <div class="mb-4" id="pdf_files_div" style="display: {{ old('motif') == 'formation_continue' || old('motif') == 'formation_drif_drh' ? 'block' : 'none' }};">
-            <label for="pdf_files" class="block text-sm font-bold text-gray-700 mb-2">Fichier PDF :</label>
-            <input type="file" name="pdf_files" id="pdf_files"
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
-
         {{-- Submit Button --}}
         <button type="submit" class="bg-blue-500 hover:bg-blue-700 mb-8 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
             Soumettre
@@ -106,15 +105,29 @@
 </div>
 
 <script>
-    function togglePdfInput() {
+    function toggleFields() {
         const motif = document.getElementById('motif').value;
-        const pdfDiv = document.getElementById('pdf_files_div');
-        if (motif === 'formation_continue' || motif === 'formation_drif_drh') {
-            pdfDiv.style.display = 'block';
+        const certificatMedicalDiv = document.getElementById('certificat_medical_div');
+        const preciserMotifDiv = document.getElementById('preciser_motif_div');
+        const pdfFilesDiv = document.getElementById('pdf_files_div');
+
+        if (motif === 'maladie') {
+            certificatMedicalDiv.style.display = 'block';
+            preciserMotifDiv.style.display = 'none';
+            pdfFilesDiv.style.display = 'none';
+        } else if (motif === 'autre') {
+            certificatMedicalDiv.style.display = 'none';
+            preciserMotifDiv.style.display = 'block';
+            pdfFilesDiv.style.display = 'block';
         } else {
-            pdfDiv.style.display = 'none';
+            certificatMedicalDiv.style.display = 'none';
+            preciserMotifDiv.style.display = 'none';
+            pdfFilesDiv.style.display = 'none';
         }
     }
+
+    // Appel initial pour s'assurer que les champs sont correctement affichés lors du chargement de la page
+    toggleFields();
 
     function validateForm() {
         const dateDebut = document.getElementById('date_debut').value;

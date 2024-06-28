@@ -36,6 +36,14 @@ return [
             'throw' => false,
         ],
 
+        'pdf_files' => [
+    'driver' => 'local',
+    'root' => public_path('pdf_files'),
+    'url' => env('APP_URL').'/pdf_files',
+    'visibility' => 'public',
+],
+
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

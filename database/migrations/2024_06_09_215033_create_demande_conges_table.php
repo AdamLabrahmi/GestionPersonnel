@@ -13,19 +13,17 @@ return new class extends Migration
     {
         Schema::create('demande_conges', function (Blueprint $table) {
             $table->id();
-            $table->string('statut');
+            $table->string('statut')->default('en attente');
             $table->date('dateDebutConge');
             $table->date('dateFinConge');
             $table->string('durreeConge');
-
-            $table->unsignedBigInteger('idFMPR');
-            $table->string('matriculePA');
+            $table->unsignedBigInteger('idFMPR')->nullable();
+            $table->string('matriculePA')->nullable();
             $table->unsignedBigInteger('idTypeConge');
-
             $table->foreign('idFMPR')->references('id')->on('formateurs__permanents');
             $table->foreign('idTypeConge')->references('id')->on('type_conges');
-            $table->timestamps();
             $table->foreign('matriculePA')->references('matricule')->on('personnel__administratifs');
+            $table->timestamps();
         });
     }
 

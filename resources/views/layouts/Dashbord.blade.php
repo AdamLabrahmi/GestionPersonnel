@@ -1376,6 +1376,34 @@
             </a>
         </li>
 
+        <li class="mb-1 group">
+            <a href="{{route('absences.all')}}" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                <i class="fas fa-list mr-3 text-lg"></i>
+                <span class="text-sm">All Absence</span>
+            </a>
+        </li>
+
+        <li class="mb-1 group">
+            <a href="#" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                {{-- <i class="fas fa-list mr-3 text-lg"></i> --}}
+                <span class="text-sm">=================</span>
+            </a>
+        </li>
+
+        <li class="mb-1 group">
+            <a href="{{route('conges.index')}}" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                <i class="fas fa-list mr-3 text-lg"></i>
+                <span class="text-sm">All Conge</span>
+            </a>
+        </li>
+
+        <li class="mb-1 group">
+            <a href="{{route('conges.create')}}" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                <i class="fas fa-plus-circle mr-3 text-lg"></i>
+                <span class="text-sm">Ajouter une demande de Conge</span>
+            </a>
+        </li>
+
             <li class="mb-1 group">
 
             </li>
@@ -1599,7 +1627,7 @@
 </script>
 
 
-<script>
+{{-- <script>
 $(document).ready(function() {
     $('#motif').change(function() {
         if ($(this).val() === 'autre') {
@@ -1609,6 +1637,85 @@ $(document).ready(function() {
         }
     });
 });
+</script> --}}
+
+
+{{-- 1 --}}
+<script>
+    $(document).ready(function() {
+        $('#motif').change(function() {
+            if ($(this).val() === 'autre') {
+                $('#pdf_files_div').show();
+            } else {
+                $('#pdf_files_div').hide();
+            }
+        });
+    });
+    </script>
+
+
+{{-- 2 --}}
+{{-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        togglePdfInput();
+    });
+
+    function togglePdfInput() {
+        const motif = document.getElementById('motif').value;
+        const pdfDiv = document.getElementById('pdf_files_div');
+        const preciserMotifDiv = document.getElementById('preciser_motif_div');
+
+        if (['formation_continue', 'formation_drif_drh', 'maladie', 'autre'].includes(motif)) {
+            pdfDiv.style.display = 'block';
+        } else {
+            pdfDiv.style.display = 'none';
+        }
+
+        if (motif === 'autre') {
+            preciserMotifDiv.style.display = 'block';
+        } else {
+            preciserMotifDiv.style.display = 'none';
+        }
+    }
+
+    function validateForm() {
+        const dateDebut = document.getElementById('date_debut').value;
+        const dateFin = document.getElementById('date_fin').value;
+        const dateDebutObj = new Date(dateDebut);
+        const dateFinObj = new Date(dateFin);
+
+        if (dateFin && dateDebutObj > dateFinObj) {
+            document.getElementById('date-error').style.display = 'block';
+            return false;
+        }
+
+        return true;
+    }
+</script> --}}
+
+
+
+
+<script>
+// Écoute de l'événement onchange sur le champ de date de début
+document.getElementById('date_debut').addEventListener('change', function() {
+    // Récupération des valeurs des champs de date de début et de fin
+    var dateDebut = new Date(document.getElementById('date_debut').value);
+    var dateFin = new Date(document.getElementById('date_fin').value);
+
+    // Vérification si la date de fin est antérieure à la date de début
+    if (dateFin < dateDebut) {
+        // Affichage du message d'erreur
+        document.getElementById('date-error').style.display = 'block';
+
+        // Annulation de la soumission automatique du formulaire
+        event.preventDefault();
+    } else {
+        // Masquage du message d'erreur
+        document.getElementById('date-error').style.display = 'none';
+    }
+});
+
 </script>
 
 <script>
